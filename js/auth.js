@@ -11,7 +11,8 @@
 
 import { auth, googleProvider, db }  from "./firebase.js";
 import {
-  signInWithPopup, signOut, onAuthStateChanged,
+  signInWithPopup, signInWithRedirect, getRedirectResult,
+  signOut, onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   doc, getDoc, setDoc, updateDoc,
@@ -94,6 +95,13 @@ const Auth = {
    * onError(err)           — שגיאה
    */
   init({ onReady, onNeedFamilyName, onNeedAuth, onError }) {
+    // טפל בחזרה מ-redirect (iOS Google Sign-In)
+    getRedirectResult(auth).catch((err) => {
+      if (err.code !== "auth/cancelled-popup-request") {
+        console.error("[Auth] redirect result error:", err);
+      }
+    });
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         onNeedAuth();
@@ -130,11 +138,18 @@ const Auth = {
 
   /**
    * Auth.signInWithGoogle()
-   * פותח popup של Google — onAuthStateChanged יטפל בהמשך.
+   * iOS → redirect (popup לא עובד ב-Safari/PWA)
+   * אחר → popup
    */
   async signInWithGoogle() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     try {
-      await signInWithPopup(auth, googleProvider);
+      if (isIOS) {
+        await signInWithRedirect(auth, googleProvider);
+        // הדף יעשה redirect — onAuthStateChanged יטפל בחזרה
+      } else {
+        await signInWithPopup(auth, googleProvider);
+      }
     } catch (err) {
       if (err.code !== "auth/popup-closed-by-user") {
         console.error("[Auth] Google sign-in failed:", err);
