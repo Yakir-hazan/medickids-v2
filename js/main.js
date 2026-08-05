@@ -80,7 +80,7 @@ window.Onboarding = (() => {
           weight,
           birthYear: birth,
         };
-        await DB.addChild(kidData);
+        await window.DB.addChild(kidData);
 
         const doneText = document.getElementById('ob-done-text');
         if (doneText) doneText.textContent = `${name} נוסף/ה בהצלחה 🎉`;
@@ -261,3 +261,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+
