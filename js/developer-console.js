@@ -91,6 +91,13 @@
     log: (category, label, detail) => logEvent(CATEGORY[category] || CATEGORY.INFO, 'app-feature', label, detail),
   };
 
+  // Global function — callable from any inline onclick, before DOMContentLoaded
+  window.openDevPanel = function() {
+    setDevMode(true);
+    showFab();
+    openPanel();
+  };
+
   /* ---------- Phase A: global hooks, installed immediately (before db.js/app.js load) ---------- */
   (function installConsoleHooks() {
     ['log', 'warn', 'error', 'info'].forEach((m) => {
