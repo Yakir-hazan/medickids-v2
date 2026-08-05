@@ -308,6 +308,72 @@
       </div>
     </div>
 
+
+    <!-- ONBOARDING FLOW (משתמש חדש) -->
+    <div class="screen" id="screen-onboarding-flow">
+      <div class="ob-wrap">
+
+        <!-- Progress dots -->
+        <div class="ob-dots">
+          <div class="ob-dot active" id="ob-dot-0"></div>
+          <div class="ob-dot" id="ob-dot-1"></div>
+          <div class="ob-dot" id="ob-dot-2"></div>
+        </div>
+
+        <!-- Step 0: מי אתה? -->
+        <div class="ob-step active" id="ob-step-0">
+          <div class="ob-emoji">👋</div>
+          <h2 class="ob-title">ברוך הבא!</h2>
+          <p class="ob-sub">מה תפקידך במשפחה?</p>
+          <div class="ob-role-row">
+            <button class="ob-role-btn" id="ob-role-dad" onclick="Onboarding.pickRole('אבא','👨')">
+              <span class="ob-role-icon">👨</span>
+              <span>אבא</span>
+            </button>
+            <button class="ob-role-btn" id="ob-role-mom" onclick="Onboarding.pickRole('אמא','👩')">
+              <span class="ob-role-icon">👩</span>
+              <span>אמא</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 1: פרטי ילד -->
+        <div class="ob-step" id="ob-step-1">
+          <div class="ob-emoji" id="ob-kid-avatar-preview">🧒</div>
+          <h2 class="ob-title">הוסף ילד/ה ראשון</h2>
+
+          <!-- Avatar picker -->
+          <div class="ob-avatar-row" id="ob-avatar-row">
+            <button class="ob-avatar-opt selected" onclick="Onboarding.pickEmoji(this,'🧒')">🧒</button>
+            <button class="ob-avatar-opt" onclick="Onboarding.pickEmoji(this,'👦')">👦</button>
+            <button class="ob-avatar-opt" onclick="Onboarding.pickEmoji(this,'👧')">👧</button>
+            <button class="ob-avatar-opt" onclick="Onboarding.pickEmoji(this,'👶')">👶</button>
+            <button class="ob-avatar-opt" onclick="Onboarding.pickEmoji(this,'🐣')">🐣</button>
+            <button class="ob-avatar-opt ob-avatar-photo" onclick="Onboarding.pickPhoto()">📷</button>
+          </div>
+          <!-- hidden photo input -->
+          <input type="file" id="ob-photo-input" accept="image/*" style="display:none" onchange="Onboarding.onPhoto(this)">
+
+          <input class="auth-input ob-field" id="ob-kid-name" type="text" placeholder="שם הילד/ה" maxlength="30">
+          <div class="ob-row-2">
+            <input class="auth-input ob-field ob-half" id="ob-kid-weight" type="number" placeholder="משקל (ק״ג)" min="1" max="120" step="0.1">
+            <input class="auth-input ob-field ob-half" id="ob-kid-birth" type="number" placeholder="שנת לידה" min="2000" max="2025">
+          </div>
+          <button class="btn-primary auth-btn ob-next-btn" onclick="Onboarding.saveKid()">המשך →</button>
+          <button class="btn-text" onclick="Onboarding.skipKid()">דלג, אוסיף אחר כך</button>
+        </div>
+
+        <!-- Step 2: סיום -->
+        <div class="ob-step" id="ob-step-2">
+          <div class="ob-emoji">🎉</div>
+          <h2 class="ob-title">הכל מוכן!</h2>
+          <p class="ob-sub" id="ob-done-text">בואו נתחיל לעקוב</p>
+          <button class="btn-primary auth-btn" onclick="Onboarding.finish()">אל הדאשבורד ←</button>
+        </div>
+
+      </div>
+    </div>
+
     <!-- MEDICINE INFO -->
     <div class="screen" id="screen-medinfo">
       <div class="scr-head">
