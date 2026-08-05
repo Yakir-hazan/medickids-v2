@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
 
       onReady(state) {
+        alert('[onReady] uid=' + (state?.uid || 'none'));
         App.init({ authDone: true });
       },
 
