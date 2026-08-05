@@ -1,0 +1,17 @@
+{
+  "name": "Medickids",
+  "short_name": "Medickids",
+  "description": "יומן תרופות, מעקב חום ותזכורות למשפחה",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3EEFF",
+  "theme_color": "#7C6FF0",
+  "dir": "rtl",
+  "lang": "he",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
