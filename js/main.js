@@ -10,11 +10,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const nav = window.navigator.standalone === true;
   const isStandalone = mq || nav;
 
+  try{window.DevCenter&&window.DevCenter.log('INFO','main:start',"standalone="+isStandalone);}catch(_){}
+
   if (!isStandalone) {
+  try{window.DevCenter&&window.DevCenter.log('INFO','main:notStandalone',"skipping auth");}catch(_){}
     App.init({ authDone: false });
     return;
   }
 
+  try{window.DevCenter&&window.DevCenter.log('INFO','main:callingAuthInit',"");}catch(_){}
   // PWA מותקן → Auth
   Auth.init({
     onNeedAuth() {
