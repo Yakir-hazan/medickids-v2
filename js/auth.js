@@ -103,7 +103,9 @@ const Auth = {
     });
 
     onAuthStateChanged(auth, async (user) => {
+    try{window.DevCenter&&window.DevCenter.log('INFO','Auth:onAuthStateChanged',user ? "user="+user.uid : "no user");}catch(_){}
       if (!user) {
+    try{window.DevCenter&&window.DevCenter.log('INFO','Auth:onNeedAuth',"");}catch(_){}
         onNeedAuth();
         return;
       }
@@ -113,7 +115,9 @@ const Auth = {
         let familyId = await _findFamilyForUser(user.uid);
 
         // 2. משתמש חדש לגמרי — צריך שם משפחה לפני שיוצרים family
+    try{window.DevCenter&&window.DevCenter.log('INFO','Auth:familyId',familyId || "null - new user");}catch(_){}
         if (!familyId) {
+    try{window.DevCenter&&window.DevCenter.log('INFO','Auth:onNeedFamilyName',"");}catch(_){}
           onNeedFamilyName(user.uid, user.displayName);
           return;
         }
@@ -121,16 +125,19 @@ const Auth = {
         // 3. חבר ל-DB
         const famSnap = await getDoc(doc(db, "families", familyId));
         const familyName = famSnap.data()?.familyName || "";
+    try{window.DevCenter&&window.DevCenter.log('INFO','Auth:DB.connect',familyId);}catch(_){}
         await DB.connect(familyId, familyName);
 
         // 4. מיגרציה מ-localStorage (חד-פעמית)
         await migrateIfNeeded(familyId);
 
         // 5. הכל מוכן
+    try{window.DevCenter&&window.DevCenter.log('INFO','Auth:onReady',"");}catch(_){}
         onReady(DB.get());
 
       } catch (err) {
         console.error("[Auth] שגיאה באתחול:", err);
+    try{window.DevCenter&&window.DevCenter.log('ERROR','Auth:catch',err.message+"\\n"+(err.stack||"").slice(0,300));}catch(_){}
         onError(err);
       }
     });
@@ -142,6 +149,8 @@ const Auth = {
    * אחר → popup
    */
   async signInWithGoogle() {
+    try{window.DevCenter&&window.DevCenter.log('INFO','Auth:signInWithGoogle',"");}catch(_){}
+
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     try {
       if (isIOS) {
