@@ -88,7 +88,9 @@ window.Onboarding = (() => {
         _goto(2);
       } catch (err) {
         console.error('[Onboarding] saveKid error', err);
+        try{window.DevCenter&&window.DevCenter.log('ERROR','Onboarding:saveKid',err.message+'\n'+(err.stack||'').slice(0,300));}catch(_){}
         if (btn) { btn.disabled = false; btn.textContent = 'המשך →'; }
+        alert('שגיאה בשמירה: ' + (err.message || String(err)));
       }
     },
 
