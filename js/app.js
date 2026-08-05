@@ -5,7 +5,7 @@ const App = (() => {
      together). This value is shown to the user in Settings and is what "בדוק אם יש עדכון"
      relies on to prove a new version actually loaded. Forgetting to bump it breaks both.
      Beta scheme: 1.0.0-beta.2 → 1.0.0-beta.2 → ... → 1.0.0 once out of beta. */
-  const APP_VERSION = '1.0.0-beta.47';
+  const APP_VERSION = '1.0.0-beta.48';
   const SPLASH_DURATION_RETURNING = 1500; // ms — short splash for returning users
   const SPLASH_DURATION_NEW       = 2200; // ms — slightly longer for new users
 
@@ -1864,18 +1864,9 @@ const App = (() => {
       return;
     }
 
-    // Step 2: standalone (installed PWA) — decide by data, not by platform.
-    const isReturningUser = DB.get().children.length > 0;
-
-    if (isReturningUser) {
-      // Returning user: short splash → Dashboard
-      showSplash();
-      setTimeout(() => goto('screen-dash'), SPLASH_DURATION_RETURNING);
-    } else {
-      // New user: splash → Onboarding flow (main.js Onboarding controller)
-      showSplash();
-      setTimeout(() => goto('screen-onboarding-flow'), SPLASH_DURATION_NEW);
-    }
+    // Step 2: standalone — always go to Dashboard. Onboarding handled by main.js only.
+    showSplash();
+    setTimeout(() => goto('screen-dash'), SPLASH_DURATION_RETURNING);
   }
 
   return {
