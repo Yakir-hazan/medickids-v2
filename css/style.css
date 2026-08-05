@@ -1041,3 +1041,79 @@ body {
   font-size: 12px; font-weight: 600; color: #474554;
 }
 
+
+/* ── Auth screens (Login + Onboarding) ───────────────────────────────────── */
+.auth-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 32px 24px;
+  text-align: center;
+  gap: 16px;
+}
+.auth-icon { font-size: 56px; margin-bottom: 4px; }
+.auth-title { font-size: 28px; font-weight: 800; color: #1a1a2e; margin: 0; }
+.auth-sub   { font-size: 15px; color: #666; margin: 0; line-height: 1.5; }
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+  padding: 14px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 14px;
+  background: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.1s;
+}
+.btn-google:hover  { box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.btn-google:active { transform: scale(0.98); }
+
+.auth-divider {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #bbb;
+  font-size: 13px;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+.auth-email-note { font-size: 13px; color: #aaa; margin: 0; }
+
+.auth-input {
+  width: 100%;
+  max-width: 320px;
+  padding: 14px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 14px;
+  font-size: 18px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+.auth-input:focus { border-color: #7C6FF0; }
+
+.auth-btn {
+  width: 100%;
+  max-width: 320px;
+  padding: 15px;
+  font-size: 17px;
+  border-radius: 14px;
+}

@@ -1894,7 +1894,7 @@ const App = (() => {
   };
 })();
 
-document.addEventListener('DOMContentLoaded', App.init);
+// App.init() נקרא על ידי main.js לאחר שה-Auth מוכן
 
 
 
