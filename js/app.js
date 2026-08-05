@@ -1872,9 +1872,9 @@ const App = (() => {
       showSplash();
       setTimeout(() => goto('screen-dash'), SPLASH_DURATION_RETURNING);
     } else {
-      // New user: splash → Onboarding (add first child) → Dashboard
+      // New user: splash → Onboarding flow (main.js Onboarding controller)
       showSplash();
-      setTimeout(() => goto('screen-kids'), SPLASH_DURATION_NEW);
+      setTimeout(() => goto('screen-onboarding-flow'), SPLASH_DURATION_NEW);
     }
   }
 
