@@ -1117,3 +1117,36 @@ body {
   font-size: 17px;
   border-radius: 14px;
 }
+
+.btn-primary {
+  display: block;
+  background: linear-gradient(135deg,#7C6FF0,#9B8EFF);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+.btn-secondary {
+  display: block;
+  background: transparent;
+  color: #7C6FF0;
+  border: 2px solid #7C6FF0;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-secondary:active { background: rgba(124,111,240,0.08); }
+
+.btn-text {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: underline;
+}
+.btn-text:active { color: #7C6FF0; }
