@@ -49,7 +49,12 @@
           כניסה עם Google
         </button>
         <div class="auth-divider"><span>או</span></div>
-        <p class="auth-email-note">כניסה עם אימייל וסיסמה — בקרוב</p>
+        <div id="auth-error" style="display:none;font-size:13px;margin-bottom:8px;text-align:center;"></div>
+        <input class="auth-input" id="input-email" type="email" placeholder="כתובת מייל" autocomplete="email" dir="ltr">
+        <input class="auth-input" id="input-password" type="password" placeholder="סיסמא" autocomplete="current-password" dir="ltr">
+        <button class="btn-primary auth-btn" id="btn-email-signin">כניסה עם מייל</button>
+        <button class="btn-secondary auth-btn" id="btn-email-register">הרשמה חדשה</button>
+        <button class="btn-text" id="btn-forgot-password">שכחתי סיסמא</button>
       </div>
     </div>
 
