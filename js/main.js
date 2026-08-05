@@ -12,6 +12,14 @@ import { Auth } from "./auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  // דפדפן רגיל → תמיד Landing (הוספה למסך הבית)
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (!isStandalone) {
+    App.init({ authDone: false }); // יציג screen-landing
+    return;
+  }
+
+  // PWA מותקן → Auth
   Auth.init({
 
     // ── המשתמש לא מחובר ──────────────────────────────────────────────
