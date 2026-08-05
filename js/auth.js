@@ -131,6 +131,7 @@ const Auth = {
 
       } catch (err) {
         console.error("[Auth] שגיאה באתחול:", err);
+        alert("[Auth catch] " + err.message + "\n" + err.stack?.slice(0, 200));
         onError(err);
       }
     });
