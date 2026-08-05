@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#7C6FF0">
+<title>Medickids</title>
+<meta name="apple-mobile-web-app-title" content="Medickids">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Heebo:wght@300;400;500;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+  <!-- OneSignal Web Push -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "049484cd-e39c-43c0-8f64-4b3f5d468174",
+      });
+    });
+  </script>
+
+</head>
+<body>
+  <header class="mk-topbar">
+    <span class="mk-topbar-title">Medickids</span>
+  </header>
+
+<div id="app">
+
+  <div class="body-area">
+
+    <!-- LANDING / ADD TO HOME SCREEN -->
+    <div class="screen active" id="screen-landing">
+      <div class="scroll" style="padding-top:14px;">
+        <div style="text-align:center;padding:10px 6px 22px;">
+          <div class="splash-icon" style="margin:0 auto 16px;">🌡️</div>
+          <div class="pick-title" style="margin-bottom:8px;">כמעט מוכנים</div>
+          <div class="pick-sub" style="font-size:13.5px;line-height:1.7;">
+            כדי שהאפליקציה תיפתח מהר, בלי דפדפן, ותוכל לשלוח לכם תזכורות —
+            כדאי להוסיף אותה למסך הבית. לוקח 10 שניות.
+          </div>
+        </div>
+
+        <!-- iOS instructions -->
+        <div id="landing-ios" style="display:none;">
+          <div class="a2hs-step"><div class="a2hs-num">1</div><div>הקישו על כפתור השיתוף <span class="a2hs-ic">⬆️</span> בתחתית מסך ה־Safari</div></div>
+          <div class="a2hs-step"><div class="a2hs-num">2</div><div>גללו למטה ובחרו <b>"הוספה למסך הבית"</b> <span class="a2hs-ic">➕</span></div></div>
+          <div class="a2hs-step"><div class="a2hs-num">3</div><div>לחצו <b>"הוספה"</b> — והאייקון יופיע כמו כל אפליקציה אחרת 🎉</div></div>
+        </div>
+
+        <!-- Android / Chrome instructions -->
+        <div id="landing-android" style="display:none;">
+          <button class="btn-primary" id="btn-install" onclick="App.installNow()">📲 התקנה למסך הבית</button>
+          <div class="a2hs-step" style="margin-top:16px;"><div class="a2hs-num">i</div><div>אם הכפתור לא הופיע: פתחו את התפריט <b>⋮</b> בדפדפן ובחרו <b>"התקן אפליקציה"</b></div></div>
+        </div>
+
+        <!-- Desktop fallback -->
+        <div id="landing-desktop" style="display:none;">
+          <div class="a2hs-step"><div class="a2hs-num">i</div><div>מומלץ לפתוח את הקישור מהנייד כדי להוסיף למסך הבית. אפשר גם להמשיך כאן בדפדפן.</div></div>
+        </div>
+
+        <div class="pick-both" style="margin-top:22px;" onclick="App.skipLanding()">להמשיך בדפדפן בלי התקנה</div>
+      </div>
+    </div>
+
+    <!-- SPLASH -->
+    <div class="screen" id="screen-splash">
+      <div class="splash-new">
+        <!-- Ambient glow layers -->
+        <div class="splash-glow-primary"></div>
+        <div class="splash-glow-secondary"></div>
+        <!-- Icon -->
+        <div class="splash-icon-wrap">
+          <div class="splash-icon-halo"></div>
+          <div class="splash-icon-box">
+            <span class="material-symbols-outlined" style="font-size:48px;color:#5744cf;font-variation-settings:'FILL' 1;">medical_services</span>
+          </div>
+        </div>
+        <!-- Brand -->
+        <h1 class="splash-brand" id="splash-temp">Medickids</h1>
+        <p class="splash-tagline" id="splash-loading-sub">טיפול מרגיע, בכל צעד בדרך.</p>
+        <!-- Dots loader -->
+        <div class="splash-dots">
+          <div class="splash-dot" style="animation-delay:0s"></div>
+          <div class="splash-dot" style="animation-delay:0.2s"></div>
+          <div class="splash-dot" style="animation-delay:0.4s"></div>
+        </div>
+        <!-- no manual button — App.init() auto-navigates via setTimeout to screen-dash / screen-kids -->
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="screen" id="screen-dash">
+      <!-- TopAppBar -->
+      <header class="dash-topbar">
+        <div class="dash-topbar-inner">
+          <button class="dash-avatar-btn" onclick="App.tab('screen-settings')">
+            <div class="dash-avatar" id="dash-avatar-img">
+              <span class="material-symbols-outlined" style="font-size:22px;color:#5744cf;">person</span>
+            </div>
+          </button>
+          <span class="dash-topbar-title">Medickids</span>
+          <button class="dash-notif-btn" id="dash-notif-btn" onclick="App.toggleNotif()">
+            <span class="material-symbols-outlined" style="font-size:24px;">notifications</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="scroll dash-scroll">
+        <!-- Hero Greeting -->
+        <section class="dash-greeting-section">
+          <div class="dash-greeting" id="dash-greeting">בוקר טוב 👋</div>
+          <div class="dash-title" id="dash-title">הנה הסקירה היומית שלכם.</div>
+          <div class="dash-updated" id="dash-updated" style="display:none;font-size:12px;color:#6B7080;margin-top:2px;"></div>
+        </section>
+
+        <!-- dynamic hero card -->
+        <div class="hero-card calm" id="dash-hero" onclick="App.heroClick()"></div>
+
+        <!-- family summary -->
+        <div class="fam-summary" id="dash-fam-summary" style="display:none"></div>
+
+        <!-- active treatments -->
+        <div id="dash-active-treatments" style="display:none"></div>
+
+        <!-- child cards -->
+        <div id="dash-children"></div>
+
+        <!-- quick actions -->
+        <div class="qa-section">
+          <div class="qa-section-title">פעולות מהירות</div>
+          <div class="qa-grid">
+            <button class="qa-btn qa-lavender" onclick="App.openMedSheet()">
+              <span class="material-symbols-outlined qa-mat-ic" style="color:#5744cf;font-variation-settings:'FILL' 1;">medication_liquid</span>
+              <div class="qa-lbl">נתתי תרופה</div>
+            </button>
+            <button class="qa-btn qa-coral" onclick="App.openTempSheet()">
+              <span class="material-symbols-outlined qa-mat-ic" style="color:#9b3e32;font-variation-settings:'FILL' 1;">device_thermostat</span>
+              <div class="qa-lbl" style="color:#9b3e32;">מדדתי חום</div>
+            </button>
+            <button class="qa-btn qa-neutral" onclick="App.openDoseSheet()">
+              <span class="material-symbols-outlined qa-mat-ic" style="color:#9E93FF;font-variation-settings:'FILL' 1;">calculate</span>
+              <div class="qa-lbl">חישוב מינון</div>
+            </button>
+            <button class="qa-btn qa-neutral" onclick="App.quickWeightUpdate()">
+              <span class="material-symbols-outlined qa-mat-ic" style="color:#9E93FF;font-variation-settings:'FILL' 1;">monitor_weight</span>
+              <div class="qa-lbl">עדכון משקל</div>
+            </button>
+            <button class="qa-btn qa-neutral" onclick="App.tab('screen-hist')">
+              <span class="material-symbols-outlined qa-mat-ic" style="color:#9E93FF;font-variation-settings:'FILL' 1;">history</span>
+              <div class="qa-lbl">היסטוריה</div>
+            </button>
+            <button class="qa-btn qa-mint" onclick="App.openCourseSheet()">
+              <span class="material-symbols-outlined qa-mat-ic" style="color:#006b5c;font-variation-settings:'FILL' 1;">health_and_safety</span>
+              <div class="qa-lbl" style="color:#006b5c;">התחל טיפול</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- timeline -->
+        <div class="tl-card" id="dash-timeline" style="display:none">
+          <div class="tl-title">אירועים אחרונים</div>
+          <div id="dash-tl-rows"></div>
+          <button class="tl-more" onclick="App.tab('screen-hist')">הצג הכול ›</button>
+        </div>
+
+        <!-- insight -->
+        <div class="insight-card" id="dash-insight" style="display:none">
+          <div class="insight-ic">💡</div>
+          <div class="insight-text" id="dash-insight-text"></div>
+        </div>
+      </div>
+
+      <div class="navbar">
+        <button class="navitem" data-nav="screen-dash" onclick="App.tab('screen-dash')"><span class="material-symbols-outlined nav-ic">home</span>בית</button>
+        <button class="navitem" data-nav="screen-hist" onclick="App.tab('screen-hist')"><span class="material-symbols-outlined nav-ic">history</span>היסטוריה</button>
+        <button class="navitem" data-nav="screen-temp" onclick="App.tab('screen-temp')"><span class="material-symbols-outlined nav-ic">device_thermostat</span>חום</button>
+        <button class="navitem" data-nav="screen-settings" onclick="App.tab('screen-settings')"><span class="material-symbols-outlined nav-ic">settings</span>הגדרות</button>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="screen" id="screen-hist">
+      <div class="scroll">
+        <div class="scr-head" style="padding-inline-start:0;"><h2>היסטוריה</h2></div>
+        <div class="filter-row" id="hist-filters"></div>
+        <div id="hist-list"></div>
+      </div>
+      <div class="navbar">
+        <button class="navitem" data-nav="screen-dash" onclick="App.tab('screen-dash')"><span class="material-symbols-outlined nav-ic">home</span>בית</button>
+        <button class="navitem" data-nav="screen-hist" onclick="App.tab('screen-hist')"><span class="material-symbols-outlined nav-ic">history</span>היסטוריה</button>
+        <button class="navitem" data-nav="screen-temp" onclick="App.tab('screen-temp')"><span class="material-symbols-outlined nav-ic">device_thermostat</span>חום</button>
+        <button class="navitem" data-nav="screen-settings" onclick="App.tab('screen-settings')"><span class="material-symbols-outlined nav-ic">settings</span>הגדרות</button>
+      </div>
+    </div>
+
+    <!-- TEMPERATURE -->
+    <div class="screen" id="screen-temp">
+      <div class="scroll">
+        <div class="scr-head" style="padding-inline-start:0;"><h2>מעקב חום</h2></div>
+        <div class="filter-row" id="temp-filters"></div>
+        <div class="chart-card">
+          <div class="chart-top"><span class="cur" id="temp-current">--°</span><span class="lbl" id="temp-current-lbl">אין מדידות עדיין</span></div>
+          <svg id="temp-svg" viewBox="0 0 300 100" width="100%" height="90"></svg>
+        </div>
+        <div id="temp-list"></div>
+      </div>
+      <button class="fab" onclick="App.openTempSheet()">➕ הוספת מדידה</button>
+      <div class="navbar">
+        <button class="navitem" data-nav="screen-dash" onclick="App.tab('screen-dash')"><span class="material-symbols-outlined nav-ic">home</span>בית</button>
+        <button class="navitem" data-nav="screen-hist" onclick="App.tab('screen-hist')"><span class="material-symbols-outlined nav-ic">history</span>היסטוריה</button>
+        <button class="navitem" data-nav="screen-temp" onclick="App.tab('screen-temp')"><span class="material-symbols-outlined nav-ic">device_thermostat</span>חום</button>
+        <button class="navitem" data-nav="screen-settings" onclick="App.tab('screen-settings')"><span class="material-symbols-outlined nav-ic">settings</span>הגדרות</button>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="screen" id="screen-settings">
+      <div class="scroll">
+        <div class="scr-head" style="padding-inline-start:0;"><h2>הגדרות</h2></div>
+        <div class="set-group">
+          <button class="set-row" id="row-notif" onclick="App.toggleNotif()">🔔 התראות ותזכורות<div class="toggle" id="toggle-notif"></div></button>
+          <button class="set-row" onclick="App.stub()">💊 תרופות מועדפות<span class="chev">‹</span></button>
+          <button class="set-row" onclick="App.goto('screen-medinfo')">🌡️ מידע על תרופות להורדת חום<span class="chev">‹</span></button>
+        </div>
+        <div class="set-group">
+          <button class="set-row" onclick="App.goto('screen-kids')">👨‍👩‍👧‍👦 ניהול ילדים<span class="chev">‹</span></button>
+          <button class="set-row" onclick="App.stub()">🏡 הגדרות משפחה<span class="chev">‹</span></button>
+        </div>
+        <div class="set-group">
+          <div class="set-row" style="cursor:default;">📦 גרסת אפליקציה<span class="chev" id="set-version-num">—</span></div>
+          <button class="set-row" onclick="App.checkForUpdate()">🔄 בדוק אם יש עדכון<span class="chev">‹</span></button>
+        </div>
+        <div class="set-group">
+          <button class="set-row" onclick="App.goto('screen-about')">ℹ️ אודות האפליקציה<span class="chev">‹</span></button>
+        </div>
+        <div class="set-group">
+          <button class="set-row danger" onclick="App.confirmReset()">🗑️ איפוס נתונים<span class="chev">‹</span></button>
+        </div>
+      </div>
+      <div class="navbar">
+        <button class="navitem" data-nav="screen-dash" onclick="App.tab('screen-dash')"><span class="material-symbols-outlined nav-ic">home</span>בית</button>
+        <button class="navitem" data-nav="screen-hist" onclick="App.tab('screen-hist')"><span class="material-symbols-outlined nav-ic">history</span>היסטוריה</button>
+        <button class="navitem" data-nav="screen-temp" onclick="App.tab('screen-temp')"><span class="material-symbols-outlined nav-ic">device_thermostat</span>חום</button>
+        <button class="navitem" data-nav="screen-settings" onclick="App.tab('screen-settings')"><span class="material-symbols-outlined nav-ic">settings</span>הגדרות</button>
+      </div>
+    </div>
+
+    <!-- CHILDREN MANAGEMENT -->
+    <div class="screen" id="screen-kids">
+      <div class="scr-head">
+        <button class="back-btn" onclick="App.goto('screen-settings')">→</button>
+        <h2>ניהול ילדים</h2>
+      </div>
+      <div class="scroll" style="padding-top:6px;">
+        <div id="kids-list"></div>
+        <button class="add-kid" onclick="App.openEditKid(null)">+ הוספת ילד/ה</button>
+      </div>
+    </div>
+
+    <!-- MEDICINE INFO -->
+    <div class="screen" id="screen-medinfo">
+      <div class="scr-head">
+        <button class="back-btn" onclick="App.goto('screen-settings')">→</button>
+        <h2>מידע על תרופות להורדת חום</h2>
+      </div>
+      <div class="scroll" style="padding-top:6px;">
+
+        <div class="info-warn">
+          ⚠️ המידע כאן הוא כללי בלבד ואינו תחליף לרופא/ה או רוקח/ת. תמיד יש לחשב מינון לפי <b>המשקל העדכני</b> של הילד/ה, לקרוא את העלון לצרכן של המוצר הספציפי שברשותכם (ריכוזים שונים בין מוצרים!), ובכל ספק — להתקשר לרופא/ה, לרוקח/ת או למוקד המידע התרופתי.
+        </div>
+
+        <div class="info-card">
+          <h3>💊 אקמול / נובימול (החומר הפעיל: פרצטמול)</h3>
+          <div class="sub">גם: דקסמול, אברול, פראמול, רוקמול, פנדול, מכבימול — כולם אותו חומר פעיל</div>
+          <div class="info-row"><span>מינון למנה</span><b>10–15 מ"ג לכל ק"ג משקל</b></div>
+          <div class="info-row"><span>מרווח בין מנות</span><b>4–6 שעות (מינימום 4)</b></div>
+          <div class="info-row"><span>מקסימום ביממה</span><b>4 מנות, עד 60–75 מ"ג/ק"ג/יום</b></div>
+          <div class="info-row"><span>גיל מינימלי</span><b>מכל גיל, אך מתחת ל-3 חודשים רק בהנחיית רופא</b></div>
+          <div style="margin-top:10px;">
+            <span class="info-tag">טיפות 100 מ"ג/מ"ל</span>
+            <span class="info-tag">סירופ 120 מ"ג/5מ"ל</span>
+            <span class="info-tag">סירופ 250 מ"ג/5מ"ל</span>
+            <span class="info-tag">נרות 80 מ"ג</span>
+            <span class="info-tag">נרות 125 מ"ג</span>
+            <span class="info-tag">נרות 150 מ"ג</span>
+            <span class="info-tag">נרות 250 מ"ג</span>
+          </div>
+          <div class="info-note">אין קשר בין פרצטמול לאיבופרופן — ניתן לשלב/להחליף ביניהם ללא זמן המתנה מיוחד, לפי הנחיית רופא.</div>
+        </div>
+
+        <div class="info-card">
+          <h3>💊 נורופן (החומר הפעיל: איבופרופן)</h3>
+          <div class="sub">גם: אדוויל, איבו — אותו חומר פעיל</div>
+          <div class="info-row"><span>מינון למנה</span><b>5–10 מ"ג לכל ק"ג משקל</b></div>
+          <div class="info-row"><span>מרווח בין מנות</span><b>6–8 שעות</b></div>
+          <div class="info-row"><span>מקסימום ביממה</span><b>עד 40 מ"ג/ק"ג/יום</b></div>
+          <div class="info-row"><span>גיל/משקל מינימלי</span><b>מגיל 6 חודשים ומעל 5 ק"ג (3–6 חודשים רק במרשם רופא)</b></div>
+          <div style="margin-top:10px;">
+            <span class="info-tag">סירופ 100 מ"ג/5מ"ל</span>
+            <span class="info-tag">פורטה 200 מ"ג/5מ"ל (ריכוז כפול!)</span>
+            <span class="info-tag">נרות 60 מ"ג</span>
+            <span class="info-tag">נרות 125 מ"ג</span>
+            <span class="info-tag">נרות 150 מ"ג</span>
+            <span class="info-tag">נרות 250 מ"ג</span>
+          </div>
+          <div class="info-note">⚠️ שימו לב: תרחיף "פורטה" מרוכז פי 2 מהרגיל — כלל אצבע של "חצי מ״ל לכל ק״ג" לא תקף בגרסה זו. בדקו את הריכוז שרשום על האריזה שלכם לפני מדידה. אין לתת לתינוקות עם אסתמה, בעיות קיבה או כליות ללא אישור רופא.</div>
+        </div>
+
+        <div class="info-note" style="text-align:center;padding:0 6px 20px;">
+          מקורות: עלוני יצרן, אתר משרד הבריאות ומחשבוני מינון רפואיים מוכרים. המידע עודכן בהתאם למקורות אלה, אך תרופות ועלונים מתעדכנים מעת לעת — יש לבדוק תמיד מול העלון העדכני שבקופסה.
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="screen" id="screen-about">
+      <div class="scr-head">
+        <button class="back-btn" onclick="App.goto('screen-settings')">→</button>
+        <h2>אודות האפליקציה</h2>
+      </div>
+      <div class="scroll" style="padding-top:6px;">
+        <div class="info-card" style="text-align:center;">
+          <div style="font-size:44px;">💊</div>
+          <h3 style="margin-top:8px;">Medickids</h3>
+          <div class="sub">יומן תרופות, מעקב חום ותזכורות למשפחה</div>
+          <div class="info-row"><span>גרסה</span><b id="about-version-num">—</b></div>
+          <div class="info-note">כל הנתונים נשמרים במכשיר בלבד ואינם מועברים לשום שרת חיצוני, מלבד תזמון תזכורות Push.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SHEET: dose calculator -->
+  <div class="sheet-overlay" id="sheet-dose" onclick="if(event.target===this)App.closeSheet('sheet-dose')">
+    <div class="sheet">
+      <button class="close-sheet" onclick="App.closeSheet('sheet-dose')">סגור ✕</button>
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">🧮 חישוב מינון</div>
+
+      <div class="field-label">ילד/ה</div>
+      <div class="chip-row" id="dose-child-chips"></div>
+
+      <div class="field-label">תרופה</div>
+      <div class="chip-row" id="dose-med-chips"></div>
+
+      <div class="field-label">ריכוז / צורת מתן</div>
+      <div class="chip-row" id="dose-conc-chips"></div>
+
+      <div class="field-label">משקל הילד/ה (ק"ג)</div>
+      <input class="field-input" id="dose-weight" type="number" step="0.1" min="1" max="60" placeholder='לדוגמה: 18' oninput="App.calcDose()">
+
+      <div class="dose-result-box" id="dose-result" style="display:none;"></div>
+      <div class="dose-warning" id="dose-warning" style="display:none;"></div>
+
+      <div class="info-note" style="margin-top:14px;font-size:12px;">
+        ⚠️ המחשבון מבוסס על עלוני יצרן — יש לאמת מול הריכוז שרשום על <b>הקופסה שברשותכם</b> ולפי הנחיית רופא/ה או רוקח/ת.
+      </div>
+    </div>
+  </div>
+
+  <!-- SHEET: add medication -->
+  <div class="sheet-overlay" id="sheet-med" onclick="if(event.target===this)App.closeSheet('sheet-med')">
+    <div class="sheet">
+      <button class="close-sheet" onclick="App.closeSheet('sheet-med')">סגור ✕</button>
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" id="med-sheet-title">נתתי תרופה</div>
+      <div class="field-label">ילד</div>
+      <div class="chip-row" id="med-child-chips"></div>
+      <div class="field-label">תרופה</div>
+      <div class="chip-row" id="med-medicine-chips"></div>
+      <div class="field-label">שעה</div>
+      <input class="field-input" id="med-time" type="time">
+      <div class="field-label">מינון שניתן</div>
+      <input class="field-input" id="med-dose" placeholder="___ מ״ל (למילוי לפי עלון היצרן)">
+      <div class="field-label">הערה (אופציונלי)</div>
+      <input class="field-input" id="med-note" placeholder="לדוגמה: אחרי אמבטיה פושרת">
+      <div class="field-label" id="med-reminder-label">תזכורת למנה הבאה</div>
+      <div class="chip-row" id="med-reminder-chips"></div>
+      <input class="field-input" id="med-reminder-custom" type="datetime-local" style="display:none;margin-top:8px;">
+      <button class="sheet-cta" onclick="App.saveMed()">שמירה</button>
+      <button class="sheet-delete" id="med-delete-btn" style="display:none" onclick="App.deleteMedEntry()">מחיקת רשומה</button>
+    </div>
+  </div>
+
+  <!-- SHEET: add temperature -->
+  <div class="sheet-overlay" id="sheet-temp" onclick="if(event.target===this)App.closeSheet('sheet-temp')">
+    <div class="sheet">
+      <button class="close-sheet" onclick="App.closeSheet('sheet-temp')">סגור ✕</button>
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" id="temp-sheet-title">הוספת מדידת חום</div>
+      <div class="field-label">ילד</div>
+      <div class="chip-row" id="temp-child-chips"></div>
+      <div class="field-label">טמפרטורה</div>
+      <input class="field-input" id="temp-value" type="number" step="0.1" min="30" max="43" placeholder="לדוגמה: 38.4">
+      <div class="field-error" id="temp-error">נא להזין ערך בין 30° ל־43°</div>
+      <div class="field-label">שעה</div>
+      <input class="field-input" id="temp-time" type="time">
+      <button class="sheet-cta" onclick="App.saveTemp()">שמירה</button>
+      <button class="sheet-delete" id="temp-delete-btn" style="display:none" onclick="App.deleteTempEntry()">מחיקת רשומה</button>
+    </div>
+  </div>
+
+  <!-- SHEET: edit / add child -->
+  <div class="sheet-overlay" id="sheet-editkid" onclick="if(event.target===this)App.closeSheet('sheet-editkid')">
+    <div class="sheet">
+      <button class="close-sheet" onclick="App.closeSheet('sheet-editkid')">סגור ✕</button>
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" id="editkid-title">עריכת פרטי ילד/ה</div>
+      <div class="field-label">שם</div>
+      <input class="field-input" id="kid-name" placeholder="שם הילד/ה">
+      <div class="field-label">משקל עדכני (ק״ג)</div>
+      <input class="field-input" id="kid-weight" type="number" step="0.1" placeholder="לדוגמה: 18">
+      <div class="field-label">שנת לידה (אופציונלי)</div>
+      <input class="field-input" id="kid-birth" type="number" placeholder="לדוגמה: 2021">
+      <button class="sheet-cta" onclick="App.saveKid()">שמירה</button>
+    </div>
+  </div>
+
+  <!-- sheet-course: פתיחת טיפול מרובה ימים (Step 2A) -->
+  <div class="sheet-overlay" id="sheet-course" onclick="if(event.target===this)App.closeSheet('sheet-course')">
+    <div class="sheet">
+      <button class="close-sheet" onclick="App.closeSheet('sheet-course')">סגור ✕</button>
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" id="sheet-course-title">💊 פתיחת טיפול</div>
+      <div class="field-label">ילד/ה</div>
+      <div class="chip-row" id="course-child-chips"></div>
+      <div class="field-label">תרופה</div>
+      <div class="chip-row" id="course-drug-chips"></div>
+      <div class="field-label">סיבה (לדוגמה: דלקת אוזניים)</div>
+      <input class="field-input" id="course-reason" type="text" placeholder="סיבת הטיפול" maxlength="60">
+      <div class="field-label">מספר ימים</div>
+      <input class="field-input" id="course-days" type="number" min="1" max="30" placeholder="לדוגמה: 10">
+      <div class="field-label">מנות ביום</div>
+      <input class="field-input" id="course-doses-per-day" type="number" min="1" max="6" placeholder="לדוגמה: 2">
+      <button class="sheet-cta" onclick="App.saveCourse()">התחל טיפול</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="js/developer-console.js"></script>
+<script src="js/db.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
