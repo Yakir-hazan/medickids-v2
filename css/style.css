@@ -1150,3 +1150,141 @@ body {
   text-decoration: underline;
 }
 .btn-text:active { color: #7C6FF0; }
+
+
+/* ══════════════════════════════════════════════════════
+   ONBOARDING FLOW
+══════════════════════════════════════════════════════ */
+.ob-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px 32px;
+  min-height: 100%;
+  gap: 16px;
+}
+
+/* Progress dots */
+.ob-dots {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.ob-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #ddd;
+  transition: background 0.3s, transform 0.3s;
+}
+.ob-dot.active {
+  background: #7C6FF0;
+  transform: scale(1.3);
+}
+
+/* Steps */
+.ob-step {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  animation: ob-in 0.3s ease;
+}
+.ob-step.active { display: flex; }
+
+@keyframes ob-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ob-emoji {
+  font-size: 64px;
+  line-height: 1;
+  margin-bottom: 4px;
+  /* support photo */
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ob-emoji img {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.ob-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin: 0;
+}
+.ob-sub {
+  font-size: 15px;
+  color: #888;
+  margin: 0;
+  text-align: center;
+}
+
+/* Role buttons */
+.ob-role-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+.ob-role-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 32px;
+  border: 2px solid #e0e0e0;
+  border-radius: 20px;
+  background: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ob-role-btn.selected {
+  border-color: #7C6FF0;
+  box-shadow: 0 0 0 3px rgba(124,111,240,0.15);
+}
+.ob-role-icon { font-size: 40px; }
+
+/* Avatar row */
+.ob-avatar-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.ob-avatar-opt {
+  font-size: 28px;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  background: #f8f8f8;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.ob-avatar-opt.selected {
+  border-color: #7C6FF0;
+  transform: scale(1.15);
+}
+.ob-avatar-photo { font-size: 22px; }
+
+/* Fields */
+.ob-field { margin: 0; }
+.ob-row-2 {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+}
+.ob-half { max-width: none; flex: 1; }
+.ob-next-btn { margin-top: 4px; }
