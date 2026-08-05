@@ -400,5 +400,8 @@ const DB = {
   },
 };
 
+// Override window.DB so app.js (non-module) uses Firestore instead of localStorage
+window.DB = DB;
+
 export default DB;
 export { DB };
