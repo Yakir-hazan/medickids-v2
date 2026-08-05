@@ -1,11 +1,5 @@
 /**
  * main.js — Medickids entry point
- *
- * סדר טעינה:
- *   1. Auth.init() מאזין ל-onAuthStateChanged
- *   2. onNeedAuth()       → מציג מסך Login
- *   3. onNeedFamilyName() → מציג מסך Onboarding
- *   4. onReady(state)     → מזריק state ל-DB, קורא App.init()
  */
 
 import { Auth } from "./auth.js";
@@ -13,7 +7,13 @@ import { Auth } from "./auth.js";
 document.addEventListener("DOMContentLoaded", () => {
 
   // דפדפן רגיל → תמיד Landing (הוספה למסך הבית)
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const mq  = window.matchMedia('(display-mode: standalone)').matches;
+  const nav = window.navigator.standalone === true;
+  const isStandalone = mq || nav;
+
+  // DEBUG זמני — למחוק אחרי בדיקה
+  alert('standalone:\nmq=' + mq + '\nnav=' + nav + '\nresult=' + isStandalone);
+
   if (!isStandalone) {
     App.init({ authDone: false }); // יציג screen-landing
     return;
@@ -22,27 +22,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // PWA מותקן → Auth
   Auth.init({
 
-    // ── המשתמש לא מחובר ──────────────────────────────────────────────
     onNeedAuth() {
       _show("screen-login");
     },
 
-    // ── משתמש חדש — צריך שם משפחה ───────────────────────────────────
     onNeedFamilyName(uid, displayName) {
-      // מלא שם מוצע אם יש
       const nameInput = document.getElementById("onboarding-name");
       if (nameInput && displayName) {
-        // displayName = "ישראל ישראלי" → שם משפחה אחרון
         const parts = displayName.trim().split(" ");
         if (parts.length > 1) nameInput.value = parts[parts.length - 1];
       }
       _show("screen-onboarding");
     },
 
-    // ── הכל מוכן — אפשר להפעיל את האפליקציה ─────────────────────────
     onReady(state) {
-      // db-firestore.js כבר חיבר את DB — עכשיו מפעילים את האפליקציה
-      // authDone:true → מדלגים על בדיקת isStandalone
       App.init({ authDone: true });
     },
 
@@ -52,12 +45,10 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   });
 
-  // ── כפתור Google Sign-In ──────────────────────────────────────────────
   document.getElementById("btn-google-signin")?.addEventListener("click", async () => {
     try {
       _setLoading("btn-google-signin", true);
       await Auth.signInWithGoogle();
-      // onAuthStateChanged יטפל בהמשך
     } catch (err) {
       console.error(err);
     } finally {
@@ -65,14 +56,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ── כפתור המשך אחרי הזנת שם משפחה ───────────────────────────────────
   document.getElementById("btn-onboarding-continue")?.addEventListener("click", async () => {
     const nameInput = document.getElementById("onboarding-name");
     const familyName = nameInput?.value.trim();
-    if (!familyName) {
-      nameInput?.focus();
-      return;
-    }
+    if (!familyName) { nameInput?.focus(); return; }
     try {
       _setLoading("btn-onboarding-continue", true);
       await Auth.createFamily(familyName);
@@ -86,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-// ── helpers ───────────────────────────────────────────────────────────────
 function _show(screenId) {
   document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
   document.getElementById(screenId)?.classList.add("active");
