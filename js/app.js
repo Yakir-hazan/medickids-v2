@@ -1847,7 +1847,7 @@ const App = (() => {
     goto('screen-kids');
   }
 
-  function init() {
+  function init({ authDone = false } = {}) {
     // Render all screens so they're ready before any transition
     renderLanding();
     renderDashboard();
@@ -1858,8 +1858,8 @@ const App = (() => {
     }
 
     // ---------- flow routing ----------
-    // Step 1: non-standalone browser → show Landing (A2HS prompt), stop here.
-    if (!isStandalone()) {
+    // Step 1: non-standalone browser AND not authenticated → Landing (A2HS prompt).
+    if (!isStandalone() && !authDone) {
       goto('screen-landing');
       return;
     }

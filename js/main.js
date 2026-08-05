@@ -33,9 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ── הכל מוכן — אפשר להפעיל את האפליקציה ─────────────────────────
     onReady(state) {
-      // החלף את DB.get() של localStorage ב-state של Firestore
-      // db-firestore.js כבר חיבר את DB לפני שנקרא onReady
-      App.init();
+      // db-firestore.js כבר חיבר את DB — עכשיו מפעילים את האפליקציה
+      // authDone:true → מדלגים על בדיקת isStandalone
+      App.init({ authDone: true });
     },
 
     onError(err) {
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       _setLoading("btn-onboarding-continue", true);
       await Auth.createFamily(familyName);
-      App.init();
+      App.init({ authDone: true });
     } catch (err) {
       console.error("[main] createFamily error:", err);
     } finally {
