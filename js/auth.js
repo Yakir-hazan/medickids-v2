@@ -131,7 +131,6 @@ const Auth = {
 
       } catch (err) {
         console.error("[Auth] שגיאה באתחול:", err);
-        alert("[Auth catch] " + err.message + "\n" + err.stack?.slice(0, 200));
         onError(err);
       }
     });
@@ -203,6 +202,37 @@ const Auth = {
   async signOut() {
     DB.disconnect();
     await signOut(auth);
+  },
+
+
+  /**
+   * Auth.signInWithEmail(email, password)
+   */
+  async signInWithEmail(email, password) {
+    const { signInWithEmailAndPassword } = await import(
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+    );
+    await signInWithEmailAndPassword(auth, email, password);
+  },
+
+  /**
+   * Auth.registerWithEmail(email, password)
+   */
+  async registerWithEmail(email, password) {
+    const { createUserWithEmailAndPassword } = await import(
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+    );
+    await createUserWithEmailAndPassword(auth, email, password);
+  },
+
+  /**
+   * Auth.resetPassword(email)
+   */
+  async resetPassword(email) {
+    const { sendPasswordResetEmail } = await import(
+      "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+    );
+    await sendPasswordResetEmail(auth, email);
   },
 
   /** המשתמש הנוכחי */
