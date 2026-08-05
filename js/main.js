@@ -6,51 +6,51 @@ import { Auth } from "./auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // דפדפן רגיל → תמיד Landing (הוספה למסך הבית)
   const mq  = window.matchMedia('(display-mode: standalone)').matches;
   const nav = window.navigator.standalone === true;
   const isStandalone = mq || nav;
 
-  // DEBUG זמני — למחוק אחרי בדיקה
-  alert('standalone:\nmq=' + mq + '\nnav=' + nav + '\nresult=' + isStandalone);
-
   if (!isStandalone) {
-    App.init({ authDone: false }); // יציג screen-landing
+    App.init({ authDone: false });
     return;
   }
 
   // PWA מותקן → Auth
-  Auth.init({
+  try {
+    Auth.init({
 
-    onNeedAuth() {
-      _show("screen-login");
-    },
+      onNeedAuth() {
+        _show("screen-login");
+      },
 
-    onNeedFamilyName(uid, displayName) {
-      const nameInput = document.getElementById("onboarding-name");
-      if (nameInput && displayName) {
-        const parts = displayName.trim().split(" ");
-        if (parts.length > 1) nameInput.value = parts[parts.length - 1];
-      }
-      _show("screen-onboarding");
-    },
+      onNeedFamilyName(uid, displayName) {
+        const nameInput = document.getElementById("onboarding-name");
+        if (nameInput && displayName) {
+          const parts = displayName.trim().split(" ");
+          if (parts.length > 1) nameInput.value = parts[parts.length - 1];
+        }
+        _show("screen-onboarding");
+      },
 
-    onReady(state) {
-      App.init({ authDone: true });
-    },
+      onReady(state) {
+        App.init({ authDone: true });
+      },
 
-    onError(err) {
-      console.error("[main] Auth error:", err);
-      _show("screen-login");
-    },
-  });
+      onError(err) {
+        alert("[Auth error] " + err.message);
+        _show("screen-login");
+      },
+    });
+  } catch(e) {
+    alert("[main catch] " + e.message);
+  }
 
   document.getElementById("btn-google-signin")?.addEventListener("click", async () => {
     try {
       _setLoading("btn-google-signin", true);
       await Auth.signInWithGoogle();
     } catch (err) {
-      console.error(err);
+      alert("[Google signin error] " + err.message);
     } finally {
       _setLoading("btn-google-signin", false);
     }
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await Auth.createFamily(familyName);
       App.init({ authDone: true });
     } catch (err) {
-      console.error("[main] createFamily error:", err);
+      alert("[createFamily error] " + err.message);
     } finally {
       _setLoading("btn-onboarding-continue", false);
     }
