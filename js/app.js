@@ -1296,6 +1296,95 @@ const App = (() => {
      of UI recomputing this itself. Built entirely on the 4 helpers above; does not touch DB, does
      not render, does not schedule anything.
      "next" = the course whose next dose is soonest among this child's active courses. */
+  /* ── childStatusViewModel (שלב 1) ──────────────────────────────────────────
+     מרכז את המידע הקיים לכדי snapshot קריא לכל ילד.
+     לא מחשב לוגיקה רפואית חדשה — רק מאחד קריאות קיימות.
+     at: timestamp מוחלט עתידי למנה הבאה — null אם לא רלוונטי.
+     canGive: האם מותר לתת עכשיו — בלי להמציא at=now. */
+  function childStatusViewModel(childId) {
+    const now = Date.now();
+
+    /* חום */
+    const lastTemp = DB.lastTempFor(childId);
+    const hasFever = !!(lastTemp && lastTemp.value >= 38);
+
+    /* תרופת PRN אחרונה
+       prnNextAt: timestamp עתידי בלבד — null אם מותר כבר לתת.
+       canGivePRN: true = מותר לתת עכשיו (מרווח עבר). */
+    const lastMed = DB.lastMedFor(childId);
+    let prnNextAt   = null;
+    let canGivePRN  = false;
+    let prnDrugName = null;
+
+    if (lastMed) {
+      const drugKey = Object.keys(MEDICATION_CATALOG)
+        .find(k => _matchesDrug(lastMed.medicine, k));
+      const drug = drugKey ? MEDICATION_CATALOG[drugKey] : null;
+      if (drug && drug.protocol.intervalHours) {
+        const readyAt = lastMed.time + drug.protocol.intervalHours * 3600000;
+        prnDrugName = lastMed.medicine;
+        if (readyAt > now) {
+          prnNextAt  = readyAt;   // עדיין ממתין
+        } else {
+          canGivePRN = true;      // מותר עכשיו — at נשאר null
+        }
+      }
+    }
+
+    /* COURSE — משתמש ב-_activeTreatmentState הקיים בלבד */
+    const courseState = _activeTreatmentState(childId);
+
+    /* nextEvent: האירוע הרלוונטי הקרוב.
+       PRN canGive=true תמיד מנצח (זמין עכשיו).
+       אחרת בוחר לפי at המוקדם יותר. */
+    let nextEvent = null;
+    const courseAt = courseState.nextDoseAt;
+
+    const _buildCourseEvent = () => {
+      const entry = courseState.nextCourse
+        ? _catalogEntryById(courseState.nextCourse.productId)
+        : null;
+      return {
+        type:    'course',
+        name:    entry ? entry.key : '',
+        at:      courseAt,
+        canGive: courseState.nextCourse ? _canMarkDoseNow(courseState.nextCourse) : false,
+      };
+    };
+    const _buildPrnEvent = () => ({
+      type:    'prn',
+      name:    prnDrugName,
+      at:      prnNextAt,     // null כשcanGivePRN=true
+      canGive: canGivePRN,
+    });
+
+    if (canGivePRN) {
+      nextEvent = _buildPrnEvent();
+    } else if (prnNextAt !== null && courseAt !== null) {
+      nextEvent = prnNextAt <= courseAt ? _buildPrnEvent() : _buildCourseEvent();
+    } else if (prnNextAt !== null) {
+      nextEvent = _buildPrnEvent();
+    } else if (courseAt !== null) {
+      nextEvent = _buildCourseEvent();
+    }
+
+    /* tags — חום רק אם >= 38, טיפול רק אם יש course פעיל */
+    const tags = [];
+    if (hasFever)                    tags.push({ type: 'fever',     label: '🌡️ חום', value: lastTemp.value });
+    if (courseState.hasActiveCourse) tags.push({ type: 'treatment', label: '💊 טיפול' });
+
+    return {
+      hasFever,
+      lastTemp,       // { value, time } | null
+      lastMed,        // { medicine, time, ... } | null
+      canGivePRN,
+      nextEvent,      // { type, name, at, canGive } | null
+      courseState,    // מ-_activeTreatmentState
+      tags,           // [{ type, label, value? }]
+    };
+  }
+  /* ── end childStatusViewModel ──────────────────────────────────────── */
+
   function _activeTreatmentState(childId) {
     const activeCourses = _activeCourses(childId);
     let nextCourse = null, nextDoseAt = null, overdueCount = 0;
