@@ -406,10 +406,13 @@ const App = (() => {
       // כרטיס warm רק אם יש חום
       const cardClass = vm.hasFever ? ' warm' : '';
 
-      // tags — דינמי מ-vm.tags; אם ריק → "הכל תקין"
+      // tags — דינמי מ-vm.tags
+      // "הכל תקין" רק כשאין חום, אין course פעיל, ואין nextEvent כלל
       const tagsHtml = vm.tags.length
         ? vm.tags.map(t => `<span class="child-status-chip ${t.type === 'fever' ? 'fever-chip' : 'ok-chip'}">${t.label}</span>`).join('')
-        : '<span class="child-status-chip ok-chip">🟢 הכל תקין</span>';
+        : !vm.nextEvent
+          ? '<span class="child-status-chip ok-chip">🟢 הכל תקין</span>'
+          : '';
 
       // tempRow — רק אם יש חום >= 38
       const tempRow = vm.hasFever && vm.lastTemp
@@ -424,15 +427,19 @@ const App = (() => {
       if (vm.nextEvent) {
         const ev = vm.nextEvent;
         const atStr = ev.at ? formatClock(ev.at) : null;
+        // כשאפשר לתת — מציג שם התרופה + "אפשר לתת עכשיו" בשורה נפרדת
+        const statusHtml = ev.canGive
+          ? `<div class="subcard-drug-name">💊 ${ev.name}</div><div class="subcard-status can-give-now">🟢 אפשר לתת עכשיו</div>`
+          : `<div class="subcard-drug-name">💊 ${ev.name}</div><div class="subcard-status">ניתן לתת ב־${atStr}</div>`;
         nextEventRow = `<div class="child-subcard${ev.canGive ? ' subcard-ok' : ' subcard-wait'}">
-          <div class="subcard-label">${ev.name} <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1;">medication_liquid</span></div>
-          <div class="subcard-status">${ev.canGive ? '🟢 אפשר לתת מנה' : `ניתן לתת ב־${atStr}`}</div>
+          <span class="material-symbols-outlined" style="font-size:18px;color:var(--ink-muted);flex-shrink:0;font-variation-settings:'FILL' 1;">medication_liquid</span>
+          <div style="flex:1;">${statusHtml}</div>
         </div>`;
       }
 
-      // canGiveBar — רק כשcanGive
+      // canGiveBar — מציג שם התרופה + שעה קונקרטית
       const canGiveBar = (vm.nextEvent && vm.nextEvent.canGive)
-        ? `<div class="can-give-bar ok-bar">🟢 אפשר לתת מנה נוספת</div>`
+        ? `<div class="can-give-bar ok-bar">🟢 אפשר לתת ${vm.nextEvent.name} עכשיו</div>`
         : (vm.nextEvent && vm.nextEvent.at)
           ? `<div class="can-give-bar warn-bar">⏱️ ניתן לתת ${vm.nextEvent.name} ב־${formatClock(vm.nextEvent.at)}</div>`
           : '';
