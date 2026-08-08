@@ -399,44 +399,45 @@ const App = (() => {
       famSummary.style.display = 'none';
     }
 
-    // ---------- child cards — row based ----------
-    wrap.innerHTML = childData.map(({ c, lastMed, lastTemp, hasFever, nextDoseMs, nextDrugName, mood }) => {
-      const cardClass = hasFever ? ' warm' : '';
-      const moodText = hasFever ? '🌡️ עם חום כרגע' : '🙂 רגוע';
+    // ---------- child cards — שלב 2: מבוסס childStatusViewModel ----------
+    wrap.innerHTML = state.children.map((c) => {
+      const vm = childStatusViewModel(c.id);
 
-      let tempRow = '';
-      if (lastTemp) {
-        tempRow = `<div class="child-subcard${hasFever ? ' subcard-fever' : ''}">
+      // כרטיס warm רק אם יש חום
+      const cardClass = vm.hasFever ? ' warm' : '';
+
+      // tags — דינמי מ-vm.tags; אם ריק → "הכל תקין"
+      const tagsHtml = vm.tags.length
+        ? vm.tags.map(t => `<span class="child-status-chip ${t.type === 'fever' ? 'fever-chip' : 'ok-chip'}">${t.label}</span>`).join('')
+        : '<span class="child-status-chip ok-chip">🟢 הכל תקין</span>';
+
+      // tempRow — רק אם יש חום >= 38
+      const tempRow = vm.hasFever && vm.lastTemp
+        ? `<div class="child-subcard subcard-fever">
           <div class="subcard-label">חום נוכחי <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1;">device_thermostat</span></div>
-          <div class="subcard-val${hasFever ? ' fever-val' : ''}">${lastTemp.value}°C</div>
+          <div class="subcard-val fever-val">${vm.lastTemp.value}°C</div>
+        </div>`
+        : '';
+
+      // nextEventRow — מבוסס vm.nextEvent בלבד
+      let nextEventRow = '';
+      if (vm.nextEvent) {
+        const ev = vm.nextEvent;
+        const atStr = ev.at ? formatClock(ev.at) : null;
+        nextEventRow = `<div class="child-subcard${ev.canGive ? ' subcard-ok' : ' subcard-wait'}">
+          <div class="subcard-label">${ev.name} <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1;">medication_liquid</span></div>
+          <div class="subcard-status">${ev.canGive ? '🟢 אפשר לתת מנה' : `ניתן לתת ב־${atStr}`}</div>
         </div>`;
       }
 
-      let medRow = '';
-      if (lastMed) {
-        const canGiveNow = nextDoseMs === null;
-        medRow = `<div class="child-subcard${canGiveNow ? ' subcard-ok' : ' subcard-wait'}">
-          <div class="subcard-label">${lastMed.medicine} <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1;">medication_liquid</span></div>
-          <div class="subcard-status">${canGiveNow ? 'אפשר לתת מנה' : 'ממתין למנה'}</div>
-        </div>`;
-      }
+      // canGiveBar — רק כשcanGive
+      const canGiveBar = (vm.nextEvent && vm.nextEvent.canGive)
+        ? `<div class="can-give-bar ok-bar">🟢 אפשר לתת מנה נוספת</div>`
+        : (vm.nextEvent && vm.nextEvent.at)
+          ? `<div class="can-give-bar warn-bar">⏱️ ניתן לתת ${vm.nextEvent.name} ב־${formatClock(vm.nextEvent.at)}</div>`
+          : '';
 
-      let canGiveHtml = '';
-      if (nextDoseMs !== null) {
-        const totalMin = Math.ceil(nextDoseMs / 60000);
-        const hh = String(Math.floor(totalMin / 60)).padStart(2, '0');
-        const mm = String(totalMin % 60).padStart(2, '0');
-        canGiveHtml = `<div class="can-give-bar warn-bar">⏱️ אפשר לתת שוב ${nextDrugName} בעוד ${hh}:${mm}</div>`;
-      } else if (lastMed) {
-        const recentNormalTemp = lastTemp && !hasFever && (Date.now() - lastTemp.time < 6 * 3600 * 1000);
-        if (recentNormalTemp) {
-          canGiveHtml = `<div class="can-give-bar ok-bar">🌟 החום תקין — ${c.name} מרגיש/ה טוב!</div>`;
-        } else {
-          canGiveHtml = `<div class="can-give-bar ok-bar">✅ אפשר לתת מנה נוספת אם צריך</div>`;
-        }
-      }
-
-      const emptyRow = (!tempRow && !medRow)
+      const emptyRow = (!tempRow && !nextEventRow)
         ? `<div class="crow"><div class="crow-ic">✨</div><div class="crow-body"><div class="crow-lbl">אין נתונים עדיין היום</div></div></div>`
         : '';
 
@@ -444,24 +445,21 @@ const App = (() => {
         <div class="child-top" onclick="App.openEditKid('${c.id}')">
           <div class="child-avatar-wrap">
             <div class="child-avatar-circle" style="background:${AVATAR_GRADIENT[c.color]}">${c.emoji}</div>
-            ${hasFever ? '<div class="child-fever-dot"></div>' : ''}
+            ${vm.hasFever ? '<div class="child-fever-dot"></div>' : ''}
           </div>
           <div class="child-info">
             <div class="child-name">${c.name}</div>
-            <div class="child-status-row">
-              ${hasFever ? '<span class="child-status-chip fever-chip">🌡️ עם חום</span>' : '<span class="child-status-chip ok-chip">טיפול פעיל</span>'}
-              <span class="child-status-dot"></span>
-            </div>
+            <div class="child-status-row">${tagsHtml}</div>
           </div>
           <button class="child-menu-btn" onclick="event.stopPropagation();App.openEditKid('${c.id}')">
             <span class="material-symbols-outlined" style="font-size:20px;color:#787586;">more_vert</span>
           </button>
         </div>
         ${tempRow}
-        ${tempRow && medRow ? '<div class="child-divider"></div>' : ''}
-        ${medRow}
+        ${tempRow && nextEventRow ? '<div class="child-divider"></div>' : ''}
+        ${nextEventRow}
         ${emptyRow}
-        ${canGiveHtml}
+        ${canGiveBar}
       </div>`;
     }).join('');
 
